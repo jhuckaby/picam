@@ -1,0 +1,24 @@
+{
+	"webServerPort": 80,
+	"logFile": "picam.log",
+	"tempDir": "temp",
+	"snapshotCommand": "/usr/bin/raspistill",
+	"snapshotOpts": "",
+	"imageWidth": 1920,
+	"imageRotate": 0,
+	"imageFormat": "jpg",
+	"imageQuality": 90,
+	"filenamePrefix": "image-",
+	"curlCommand": "/usr/bin/curl",
+	"curlOpts": "--retry 100 --retry-max-time 60 -v",
+	"ftpHostname": "FTP.YOURSERVER.COM",
+	"ftpUsername": "YOUR_USERNAME",
+	"ftpPassword": "YOUR_PASSWORD",
+	"ftpDirectory": "path/to/your/images",
+	"keepDays": 90,
+	"schedule": {
+		"00:00": "snapshotUpload",
+		"04:30": "deleteOldFiles",
+		":30": "uploadAllFiles"
+	}
+}

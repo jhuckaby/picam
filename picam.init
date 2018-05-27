@@ -1,0 +1,90 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          picam
+# Required-Start:    $local_fs $remote_fs $network $syslog $named
+# Required-Stop:     $local_fs $remote_fs $network $syslog $named
+# Default-Start:     3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop picam service.
+### END INIT INFO
+
+NAME="picam"
+BINARY="node server.js"
+PIDFILE="pid.txt"
+HOMEDIR="/opt/picam"
+
+cd $HOMEDIR
+ERROR=0
+
+for ARG in $@
+do
+	# check for pidfile
+	if [ -f $PIDFILE ] ; then
+		PID=`cat $PIDFILE`
+		if [ "x$PID" != "x" ] && kill -0 $PID 2>/dev/null ; then
+			STATUS="$NAME running (pid $PID)"
+			RUNNING=1
+		else
+			STATUS="$NAME not running (pid $PID?)"
+			RUNNING=0
+		fi
+	else
+		STATUS="$NAME not running (no pid file)"
+		RUNNING=0
+	fi
+	
+	case $ARG in
+	start)
+		if [ $RUNNING -eq 1 ]; then
+			echo "$ARG: $NAME already running (pid $PID)"
+			continue
+		fi
+		echo "$0 $ARG: Starting up $NAME..."
+		if $BINARY ; then
+			echo "$0 $ARG: $NAME started"
+		else
+			echo "$0 $ARG: $NAME could not be started"
+			ERROR=3
+		fi
+	;;
+	stop)
+		if [ $RUNNING -eq 0 ]; then
+			echo "$ARG: $STATUS"
+			continue
+		fi
+		if kill $PID ; then
+			while [ "x$PID" != "x" ] && kill -0 $PID 2>/dev/null ; do
+				sleep 1;
+			done
+			echo "$0 $ARG: $NAME stopped"
+		else
+			echo "$0 $ARG: $NAME could not be stopped"
+			ERROR=4
+		fi
+	;;
+	restart)
+		$0 stop start
+	;;
+	status)
+		echo "$ARG: $STATUS"
+	;;
+	*)
+	echo "usage: $0 (start|stop|restart|status|help)"
+	cat <<EOF
+
+start	- Starts $NAME as a daemon.
+stop	- Stops $NAME and wait until it actually exits.
+restart - Calls stop, then start (hard restart).
+status	- Checks whether $NAME is currently running.
+help	- Displays this screen.
+
+EOF
+	ERROR=2
+	;;
+
+	esac
+
+done
+
+exit $ERROR
