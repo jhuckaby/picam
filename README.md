@@ -178,6 +178,8 @@ This instructs the Pi to immediately take a snapshot, and send the image back to
 http://192.168.1.10/snapshot
 ```
 
+Please note that it takes about 5 seconds to warm up the camera, take the shot, and send it to your browser.
+
 ### /run
 
 This instructs the Pi to run a snapshot + upload, just like the scheduled `snapshotUpload` command.  This will not display the image in the browser, but rather just instructs the Pi to run the two commands in the background.  Example URL:
